@@ -1,12 +1,13 @@
 import React from "react";
 import "./App.css";
+import DocumentForm from "./DocumentForm";
 
 const App = () => {
   return (
     <>
       <div className="app">
         <div className="app_wrapper">
-          <h1>Hello World!</h1>
+          <DocumentForm />
         </div>
       </div>
     </>

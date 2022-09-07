@@ -8,3 +8,45 @@
   max-width: 1400px;
   margin: 0 auto;
 }
+.document_form {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+.document_form_wrapper {
+  flex-grow: 1;
+  padding: 50px 0;
+}
+.document_form_wrapper form {
+  background-color: #fff;
+  padding: 2rem;
+}
+form .required_field::after {
+  content: " *";
+  color: red;
+}
+form input[type="text"],
+form input[type="email"],
+form input[type="date"],
+form select {
+  padding: 8px 15px;
+  width: 100%;
+  display: block;
+}
+form .add_btn,
+form .remove_btn {
+  border: 0;
+  outline: 0;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: 22px;
+}
+form .add_btn {
+  background-color: #505050;
+  color: #fff;
+}
+form .remove_btn {
+  background-color: #ddd;
+  color: #505050;
+}
