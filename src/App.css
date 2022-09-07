@@ -50,3 +50,10 @@ form .remove_btn {
   background-color: #ddd;
   color: #505050;
 }
+form button[type="submit"] {
+  background-color: #505050;
+  border: 0;
+  outline: 0;
+  color: #fff;
+  padding: 15px 35px;
+}
