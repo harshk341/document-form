@@ -31,7 +31,7 @@ function validateAll(items) {
   return allValid;
 }
 
-function validateMe(item, id) {
+function validateMe(item) {
   if (!item.fileName) {
     item.fileNameErr = "Required";
   } else {
@@ -134,10 +134,12 @@ const DocumentForm = () => {
                       ...values,
                       docName: fields.map((item) => item.fileName),
                       docType: fields.map((item) => item.fileType),
-                      document: fields.map((item) => item.fileUpload),
                     },
                     { indices: true }
                   );
+                  fields
+                    .map((item) => item.fileUpload)
+                    .forEach((item) => serializeData.append("document", item));
                   const data = await apiCaller(
                     "/user/document-submit",
                     "post",

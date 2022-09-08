@@ -12,6 +12,9 @@ instanceOfAxios.interceptors.request.use(
 
 instanceOfAxios.interceptors.response.use(
   (response) => {
+    if (response.data) {
+      return response.data;
+    }
     return response;
   },
   (error) => {
