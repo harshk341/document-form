@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Col, Container, Row, Form, Spinner } from "react-bootstrap";
 import { Formik } from "formik";
 import uniqid from "uniqid";
 import * as Yup from "yup";
-import axios from "axios";
 import { serialize } from "object-to-formdata";
+import { apiCaller } from "./apiCaller";
 
 function validateAll(items) {
   let allValid = true;
@@ -31,8 +31,8 @@ function validateAll(items) {
   return allValid;
 }
 
-function validateMe(items, id) {
-  const item = items.find((item) => item.fieldSetId === id);
+function validateMe(item, id) {
+  // const item = items.find((item) => item.fieldSetId === id);
   if (!item.fileName) {
     item.fileNameErr = "Required";
   } else {
@@ -67,6 +67,8 @@ const DocumentForm = () => {
       fileUpload: null,
     },
   ]);
+  const pAddressS1Ref = useRef(null);
+  const pAddressS2Ref = useRef(null);
 
   const handleAddfield = () => {
     setFields((prev) => [
@@ -91,7 +93,7 @@ const DocumentForm = () => {
       key !== "fileUpload"
         ? event.target.value
         : event.currentTarget.files[0] || null;
-    validateMe(fields, id);
+    validateMe(item, id);
     setFields((prev) => [...prev]);
   };
 
@@ -126,18 +128,30 @@ const DocumentForm = () => {
                 cAddressS1: Yup.string().required("Required"),
                 cAddressS2: Yup.string().required("Required"),
               })}
-              onSubmit={(values, { setErrors, setSubmitting }) => {
-                const serializeData = serialize(values);
-                axios
-                  .post(
-                    "http://reactnodejstest.xicom.us/api/v1/user/document-submit",
+              onSubmit={async (values, { setSubmitting }) => {
+                try {
+                  const serializeData = serialize(
+                    {
+                      ...values,
+                      docName: fields.map((item) => item.fileName),
+                      docType: fields.map((item) => item.fileType),
+                      document: fields.map((item) => item.fileUpload),
+                    },
+                    { indices: true }
+                  );
+                  const data = await apiCaller(
+                    "/user/document-submit",
+                    "post",
                     serializeData
-                  )
-                  .then((response) => console.log(response))
-                  .catch((error) => {
-                    console.log(error);
-                    setSubmitting(false);
-                  });
+                  );
+                  console.log(data);
+                  alert(data.message);
+                  setSubmitting(false);
+                } catch (error) {
+                  console.log(error);
+                  alert(error.data.message);
+                  setSubmitting(false);
+                }
               }}
             >
               {({
@@ -340,6 +354,11 @@ const DocumentForm = () => {
                                     "pAddressS2",
                                     values.cAddressS2
                                   );
+                                  pAddressS1Ref.current.disabled = true;
+                                  pAddressS2Ref.current.disabled = true;
+                                } else {
+                                  pAddressS1Ref.current.disabled = false;
+                                  pAddressS2Ref.current.disabled = false;
                                 }
                               }}
                               checked={Boolean(values.isPermanentCurrentAdd)}
@@ -355,13 +374,10 @@ const DocumentForm = () => {
                           <Form.Group className="mb-4" controlId="pAddressS1">
                             <Form.Label>Street 1</Form.Label>
                             <Form.Control
+                              ref={pAddressS1Ref}
                               type="text"
                               name="pAddressS1"
-                              value={
-                                Boolean(values.isPermanentCurrentAdd)
-                                  ? values.cAddressS1
-                                  : values.pAddressS1
-                              }
+                              value={values.pAddressS1}
                               onChange={(event) => {
                                 if (!values.isPermanentCurrentAdd) {
                                   handleChange(event);
@@ -374,13 +390,10 @@ const DocumentForm = () => {
                           <Form.Group className="mb-4" controlId="pAddressS2">
                             <Form.Label>Street 2</Form.Label>
                             <Form.Control
+                              ref={pAddressS2Ref}
                               type="text"
                               name="pAddressS2"
-                              value={
-                                Boolean(values.isPermanentCurrentAdd)
-                                  ? values.cAddressS2
-                                  : values.pAddressS2
-                              }
+                              value={values.pAddressS2}
                               onChange={(event) => {
                                 if (!values.isPermanentCurrentAdd) {
                                   handleChange(event);
