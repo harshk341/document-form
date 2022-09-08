@@ -32,7 +32,6 @@ function validateAll(items) {
 }
 
 function validateMe(item, id) {
-  // const item = items.find((item) => item.fieldSetId === id);
   if (!item.fileName) {
     item.fileNameErr = "Required";
   } else {
